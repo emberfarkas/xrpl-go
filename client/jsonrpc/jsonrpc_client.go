@@ -12,6 +12,7 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/tidwall/gjson"
 	"github.com/xyield/xrpl-go/client"
 	jsonrpcmodels "github.com/xyield/xrpl-go/client/jsonrpc/models"
 )
@@ -180,8 +181,8 @@ func CheckForError(res *http.Response) (jsonrpcmodels.JsonRpcResponse, error) {
 	}
 
 	// result will have 'error' if error response
-	if _, ok := jr.Result["error"]; ok {
-		return jr, &JsonRpcClientError{ErrorString: jr.Result["error"].(string)}
+	if res := gjson.Get(string(jr.Result), "error"); len(res.String()) > 0 {
+		return jr, &JsonRpcClientError{ErrorString: res.String()}
 	}
 
 	return jr, nil

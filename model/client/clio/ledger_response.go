@@ -2,6 +2,7 @@ package clio
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/xyield/xrpl-go/model/client/common"
 	"github.com/xyield/xrpl-go/model/ledger"
@@ -53,6 +54,7 @@ func (l *ClioLedger) UnmarshalJSON(data []byte) error {
 	var h clHelper
 	err := json.Unmarshal(data, &h)
 	if err != nil {
+		fmt.Println("-------------1")
 		return err
 	}
 	*l = ClioLedger{
@@ -73,6 +75,7 @@ func (l *ClioLedger) UnmarshalJSON(data []byte) error {
 	for _, state := range h.AccountState {
 		obj, err := ledger.UnmarshalLedgerObject(state)
 		if err != nil {
+			fmt.Println("-------------2")
 			return err
 		}
 		l.AccountState = append(l.AccountState, obj)
@@ -81,6 +84,7 @@ func (l *ClioLedger) UnmarshalJSON(data []byte) error {
 	for _, tx := range h.Transactions {
 		tx, err := transactions.UnmarshalTx(tx)
 		if err != nil {
+			fmt.Println("-------------3")
 			return err
 		}
 		l.Transactions = append(l.Transactions, tx)

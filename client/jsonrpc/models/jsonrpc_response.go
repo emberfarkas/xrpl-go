@@ -1,12 +1,12 @@
 package jsonrpcmodels
 
 import (
-	"github.com/mitchellh/mapstructure"
+	"encoding/json"
 	"github.com/xyield/xrpl-go/client"
 )
 
 type JsonRpcResponse struct {
-	Result    AnyJson                      `json:"result"`
+	Result    json.RawMessage              `json:"result"`
 	Warning   string                       `json:"warning,omitempty"`
 	Warnings  []client.XRPLResponseWarning `json:"warnings,omitempty"`
 	Forwarded bool                         `json:"forwarded,omitempty"`
@@ -21,15 +21,5 @@ type ApiWarning struct {
 }
 
 func (r JsonRpcResponse) GetResult(v any) error {
-	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json",
-		Result: &v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
-
-	if err != nil {
-		return err
-	}
-	err = dec.Decode(r.Result)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(r.Result, &v)
 }
